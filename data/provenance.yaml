@@ -1,0 +1,64 @@
+# Where this data comes from and what was done to it.
+
+source:
+  name: e-Gov法令検索 / e-Gov Law Search, XML bulk download
+  publisher: デジタル庁 / Digital Agency, Government of Japan
+  about: https://laws.e-gov.go.jp/
+  fetched_from: https://laws.e-gov.go.jp/bulkdownload?file_section=1&only_xml_flag=true
+  archive: all_xml.zip
+  archive_timestamp: 2026-09-16
+  archive_bytes: 322982691
+  archive_md5: 9b88ffe47aa60b18e1f28107cff60d5d
+  licence:
+    applied: PDL1.0 （公共データ利用規約（第1.0版））
+    equivalent: CC BY 4.0
+    basis: |
+      PDL1.0 clause 1.7(3) states that the licence is compatible with CC BY
+      4.0. The terms of use of e-gov.go.jp apply PDL1.0 to its subdomains
+      unless another notice is given, and no other notice was found for the
+      law data. The text of a law is not protected by copyright
+      (Copyright Act Article 13, item 1).
+    attribution_required: true
+    share_alike: false
+
+contents:
+  rows: 10679
+  distinct_laws: 8997
+  unenforced_revisions: 1676
+  xml_bytes_extracted: 3607590727
+  characters_of_text: 573048356
+  latest_enforced_per_law:
+    rows: 8997
+    characters_of_text: 163336708
+
+scope:
+  note: |
+    The archive holds laws in force and revisions not yet in force. It does
+    not hold repealed or lapsed laws, which the API lists (559 on 2026-10-06)
+    and the bulk download omits.
+  history_starts:
+    act_cabinet_order_imperial_order: 2015-08-01
+    ministerial_ordinance_rule: 2016-10-01
+
+processing:
+  - step: export
+    script: scripts/02_export_parquet.py
+    modifications: |
+      Declared on the card because PDL1.0 asks that a modification be stated.
+      The XML files and all_law_list.csv were joined on the revision id taken
+      from the CSV's 本文URL, and the script stops if the two disagree. Column
+      names were translated. Three era-calendar dates were converted to ISO
+      8601 (src/egov_laws/dates.py). `text` was extracted from the XML with
+      ruby readings removed (src/egov_laws/parse.py). `xml` is the file as
+      distributed.
+    checks: |
+      The CSV and the archive list the same 10679 revisions. The ISO
+      enforcement date equals the date in the revision id on every row.
+
+not_included:
+  - what: repealed and lapsed laws
+    reason: not in the bulk download. Available from the API.
+  - what: images (pict/)
+    reason: not in the bulk download. 42233 Fig elements refer to them.
+  - what: 告示, 訓令, 通達, 条例, 規程
+    reason: not carried by e-Gov 法令検索.

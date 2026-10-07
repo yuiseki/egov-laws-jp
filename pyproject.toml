@@ -1,0 +1,24 @@
+[project]
+name = "egov-laws"
+version = "0.1.0"
+description = "Reproducible export of the e-Gov law XML bulk download for Hugging Face"
+requires-python = ">=3.12"
+dependencies = [
+    "pyarrow>=18",
+    "huggingface-hub>=1.0",
+]
+
+[dependency-groups]
+dev = ["pytest>=9.1.1", "ruff>=0.16.9"]
+
+[tool.ruff]
+target-version = "py312"
+line-length = 100
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "B", "UP", "SIM"]
+ignore = ["E501"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+pythonpath = ["src"]

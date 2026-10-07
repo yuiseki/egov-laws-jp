@@ -1,0 +1,13 @@
+# The data itself is not tracked in git; it goes to the Hugging Face Hub.
+# data/raw/ holds what was fetched from e-Gov (all_xml.zip) and the earlier
+# plain-text extraction (laws.txt). Generated outputs go under data/.
+data/raw/
+data/parquet/
+data/work/
+
+.venv/
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.ruff_cache/
+*.log

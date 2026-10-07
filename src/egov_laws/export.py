@@ -2,6 +2,7 @@
 
 import pyarrow as pa
 
+from egov_laws.dates import wareki_to_iso
 from egov_laws.parse import revision_id_from_url
 
 _COLUMNS = {
@@ -20,16 +21,21 @@ _COLUMNS = {
     "本文URL": "source_url",
 }
 
+_DATE_COLUMNS = ["promulgation_date", "amendment_promulgation_date", "enforcement_date"]
+
 
 def row_from_csv(csv_row: dict[str, str]) -> dict:
     row = {"revision_id": revision_id_from_url(csv_row["本文URL"])}
     for ja, en in _COLUMNS.items():
         row[en] = csv_row[ja] or None
+    for col in _DATE_COLUMNS:
+        row[f"{col}_iso"] = wareki_to_iso(row[col])
     row["is_unenforced"] = csv_row["未施行"] == "○"
     return row
 
 
 SCHEMA = pa.schema(
     [(en, pa.string()) for en in ["revision_id", *_COLUMNS.values()]]
+    + [(f"{c}_iso", pa.string()) for c in _DATE_COLUMNS]
     + [("is_unenforced", pa.bool_()), ("text", pa.string()), ("xml", pa.string())]
 )

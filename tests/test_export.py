@@ -43,3 +43,15 @@ def test_schema_matches_row_keys():
     from egov_laws.export import SCHEMA
 
     assert set(SCHEMA.names) == set(row_from_csv(CSV_ROW)) | {"text", "xml"}
+
+
+def test_row_from_csv_iso_dates():
+    row = row_from_csv(CSV_ROW)
+    assert row["promulgation_date_iso"] == "1951-12-01"
+    assert row["amendment_promulgation_date_iso"] == "2022-04-15"
+    assert row["enforcement_date_iso"] == "2023-04-01"
+
+
+def test_enforcement_date_iso_matches_revision_id():
+    row = row_from_csv(CSV_ROW)
+    assert row["revision_id"].split("_")[1] == row["enforcement_date_iso"].replace("-", "")
